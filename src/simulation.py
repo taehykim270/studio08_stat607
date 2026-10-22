@@ -180,11 +180,11 @@ class SimulationStudy:
                     se = group["coefficient_error"].std(ddof=1) / np.sqrt(count)
                     
                 summary_records.append({
-                    "n_sim": n_sim,
-                    "gamma": gamma,
+                    "_n_sim": n_sim,
+                    "_gamma": gamma,
                     "method": method,
-                    "mse hat": mse_hat,
-                    "se (mse hat)": se
+                    "_mse hat": mse_hat,
+                    "_mse_hat_standard_error": se
                 })
                 
         # Explicitly define columns so it never creates an empty-column DataFrame

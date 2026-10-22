@@ -9,7 +9,7 @@ def plot_loss_vs_gamma(df, ax, *, _n_sim, _gamma, _mse_hat, _mse_hat_standard_er
     """
     Plot the loss versus gamma
     """
-    if df[_n_sim][0] < 20:
+    if df[_n_sim].iloc[0] < 20:
         alpha=0.3
     else:
         alpha=1
