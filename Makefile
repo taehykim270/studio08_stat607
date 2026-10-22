@@ -12,10 +12,7 @@ simulate:
 	$(PYTHON) simulate.py --seed $(SEED)
 
 analyze:
-	$(PYTHON) analyze.py --stage analyze
-
-figures:
-	$(PYTHON) analyze.py --stage figures
+	$(PYTHON) analyze_results.py --stage analyze
 
 test:
 	$(PYTHON) -m pytest -q

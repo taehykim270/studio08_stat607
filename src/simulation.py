@@ -71,16 +71,16 @@ class SimulationStudy:
     completed batches. An interruption during a scenario repeats that batch.
     """
 
-    def __init__(self, scenarios, seed=20261015,
+    def __init__(self, scenarios, n_reps=100, seed=20261015,
                  out_dir="results/raw", methods=None):
-        self.scenarios, self.n_reps, self.seed = scenarios, scenarios["n_reps"], seed
+        self.scenarios, self.n_reps, self.seed = scenarios, n_reps, seed
         self.out_dir = Path(out_dir)
         self.methods = [OLS(), LAD()] if methods is None else methods
         root = Path(__file__).resolve().parents[1]
         files = [*sorted((root / "src").glob("*.py")),
                  root / "scenarios.py", root / "simulate.py"]
         self.config = {
-            "scenarios": scenarios, "n_reps": self.n_reps, "seed": seed,
+            "scenarios": scenarios, "n_reps": n_reps, "seed": seed,
             "methods": [{"method": m.name, "class": type(m).__name__,
                          "settings": m.settings} for m in self.methods],
             "model": {"beta": "ones(p)/sqrt(p)", "covariance": "rho**abs(j-k)",
@@ -107,11 +107,16 @@ class SimulationStudy:
             saved = pd.read_csv(checkpoint)
             saved["message"] = saved.message.fillna("")
             return saved
+            
+        scenario_reps = settings.get("n_reps", self.n_reps)
+        
         dgp = DGP_CLASSES[settings["error_distribution"]](
             settings["n"], settings["p"], settings["rho"])
-        estimates = np.full((self.n_reps, len(self.methods), settings["p"]), np.nan)
+            
+        estimates = np.full((scenario_reps, len(self.methods), settings["p"]), np.nan)
         rows = []
-        for rep in range(self.n_reps):
+        
+        for rep in range(scenario_reps):
             data = dgp.generate(rng_for(self.seed, scenario_id, rep, "data"))
             for j, method in enumerate(self.methods):
                 start = perf_counter()
@@ -141,7 +146,7 @@ class SimulationStudy:
         temporary.replace(numeric)
         frame = pd.DataFrame(rows)
         save_csv(frame, checkpoint)
-        logging.info("Completed %s (%s replicates)", scenario_id, self.n_reps)
+        logging.info("Completed %s (%s replicates)", scenario_id, scenario_reps)
         return frame
 
     def run(self):
@@ -158,4 +163,37 @@ class SimulationStudy:
                                for sid, s in self.scenarios.items()])
         save_csv(design, self.out_dir / "design.csv")
         save_json(metadata, self.out_dir / "metadata.json")
+        
+        # --- NEW: Aggregate regimes and save as .pkl ---
+        summary_records = []
+        
+        # Check that n_reps is actually in the results (prevents crashes from old caches)
+        if not results.empty and "n_reps" in results.columns:
+            for (n_sim, gamma, method), group in results.groupby(["n_reps", "gamma", "method"]):
+                mse_hat = group["coefficient_error"].mean()
+                count = group["coefficient_error"].count()
+                
+                # When n=1 (or if all fits failed but 1), set SE to 0
+                if count <= 1:
+                    se = 0.0
+                else:
+                    se = group["coefficient_error"].std(ddof=1) / np.sqrt(count)
+                    
+                summary_records.append({
+                    "n_sim": n_sim,
+                    "gamma": gamma,
+                    "method": method,
+                    "mse hat": mse_hat,
+                    "se (mse hat)": se
+                })
+                
+        # Explicitly define columns so it never creates an empty-column DataFrame
+        columns = ["_n_sim", "_gamma", "method", "_mse_hat", "_mse_hat_standard_error"]
+        summary_df = pd.DataFrame(summary_records, columns=columns)
+        
+        # Save to the output directory as a .pkl file
+        pkl_path = self.out_dir / "simulation_results.pkl"
+        summary_df.to_pickle(pkl_path)
+        logging.info("Saved aggregated DataFrame to %s", pkl_path)
+
         return results
