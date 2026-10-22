@@ -1,5 +1,4 @@
 PYTHON ?= python3
-REPS ?= 100
 SEED ?= 20261015
 
 .PHONY: all simulate analyze figures test clean
@@ -10,7 +9,7 @@ all:
 	$(MAKE) figures
 
 simulate:
-	$(PYTHON) simulate.py --reps $(REPS) --seed $(SEED)
+	$(PYTHON) simulate.py --seed $(SEED)
 
 analyze:
 	$(PYTHON) analyze.py --stage analyze
