@@ -71,16 +71,16 @@ class SimulationStudy:
     completed batches. An interruption during a scenario repeats that batch.
     """
 
-    def __init__(self, scenarios, n_reps=100, seed=20261015,
+    def __init__(self, scenarios, seed=20261015,
                  out_dir="results/raw", methods=None):
-        self.scenarios, self.n_reps, self.seed = scenarios, n_reps, seed
+        self.scenarios, self.n_reps, self.seed = scenarios, scenarios["n_reps"], seed
         self.out_dir = Path(out_dir)
         self.methods = [OLS(), LAD()] if methods is None else methods
         root = Path(__file__).resolve().parents[1]
         files = [*sorted((root / "src").glob("*.py")),
                  root / "scenarios.py", root / "simulate.py"]
         self.config = {
-            "scenarios": scenarios, "n_reps": n_reps, "seed": seed,
+            "scenarios": scenarios, "n_reps": self.n_reps, "seed": seed,
             "methods": [{"method": m.name, "class": type(m).__name__,
                          "settings": m.settings} for m in self.methods],
             "model": {"beta": "ones(p)/sqrt(p)", "covariance": "rho**abs(j-k)",
