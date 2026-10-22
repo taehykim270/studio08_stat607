@@ -33,3 +33,5 @@ class LAD(Method):
 
     def fit(self, data, rng):
         return QuantileRegressor(**self.settings).fit(data["X"], data["y"]).coef_
+
+# class Ridgeless(Method)

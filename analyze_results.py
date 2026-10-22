@@ -20,13 +20,14 @@ def plot_loss_vs_gamma(df, ax, *, _n_sim, _gamma, _mse_hat, _mse_hat_standard_er
     mse = df[_mse_hat]
     mse_std_err = df[_mse_hat_standard_error]
     
-    ax.errorbar(x=gamma, y=mse, yerr=mse_std_err, label="Monte Carlo Loss", alpha=alpha, color="blue")
+    #ax.errorbar(x=gamma, y=mse, yerr=mse_std_err, label="Monte Carlo Loss", alpha=alpha, color="blue")
+    ax.scatter(x=gamma, y=mse, label="Monte Carlo Loss")
 
     smoothed_fit_below_1 = sm.nonparametric.lowess(df.loc[df[_gamma] <= 1][_mse_hat], df.loc[df[_gamma] <= 1][_gamma], frac=0.1, it=0)
     smoothed_fit_above_1 = sm.nonparametric.lowess(df.loc[df[_gamma] > 1][_mse_hat], df.loc[df[_gamma] > 1][_gamma], frac=0.1, it=0)
     
-    plt.plot(smoothed_fit_below_1[:, 0], smoothed_fit_below_1[:, 1], label="MC Risk", color=FIT_COLOR)
-    plt.plot(smoothed_fit_above_1[:, 0], smoothed_fit_above_1[:, 1], color=FIT_COLOR)
+    ax.plot(smoothed_fit_below_1[:, 0], smoothed_fit_below_1[:, 1], label="MC Risk", color=FIT_COLOR)
+    ax.plot(smoothed_fit_above_1[:, 0], smoothed_fit_above_1[:, 1], color=FIT_COLOR)
 
 
     ax.set_ylabel("MSE Loss / Risk")
@@ -41,6 +42,7 @@ def plot_loss_vs_gamma(df, ax, *, _n_sim, _gamma, _mse_hat, _mse_hat_standard_er
     ax.set_ybound(lower=-0.2,upper=10.2)
     ax.set_xbound(lower=0.05,upper=10.2)
 
+    ax.legend()
 
 if __name__ == "__main__":
     # Load the DataFrame from the pickle file
@@ -55,12 +57,18 @@ if __name__ == "__main__":
     _mse_hat_standard_error = "_mse_hat_standard_error"
 
     n_sim_values = df[_n_sim].unique()
+    print(n_sim_values)
+    print(df.head(10))
 
 
-    fig, axs = plt.subplots(1,len(_n_sim), squeeze=False)
-    axs = axs.ravel()
+    fig, axs = plt.subplots(1,len(n_sim_values))
 
     for i, n_sim in enumerate(n_sim_values):
-        plot_loss_vs_gamma(df.loc[df[_n_sim] == n_sim], ax=axs[i], _n_sim=_n_sim, _gamma=_gamma, _mse_hat=_mse_hat, _mse_hat_standard_error=_mse_hat_standard_error)
+        plot_loss_vs_gamma(df.loc[df[_n_sim] == n_sim],
+                           ax=axs[i],
+                           _n_sim=_n_sim,
+                           _gamma=_gamma,
+                           _mse_hat=_mse_hat,
+                           _mse_hat_standard_error=_mse_hat_standard_error)
 
-    plt.savefig("results/figures/loss_vs_gamma.pdf")
+    fig.savefig("results/figures/loss_vs_gamma.pdf")

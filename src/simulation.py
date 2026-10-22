@@ -75,7 +75,7 @@ class SimulationStudy:
                  out_dir="results/raw", methods=None):
         self.scenarios, self.n_reps, self.seed = scenarios, n_reps, seed
         self.out_dir = Path(out_dir)
-        self.methods = [OLS(), LAD()] if methods is None else methods
+        self.methods = [OLS()] if methods is None else methods
         root = Path(__file__).resolve().parents[1]
         files = [*sorted((root / "src").glob("*.py")),
                  root / "scenarios.py", root / "simulate.py"]
@@ -111,7 +111,7 @@ class SimulationStudy:
         scenario_reps = settings.get("n_reps", self.n_reps)
         
         dgp = DGP_CLASSES[settings["error_distribution"]](
-            settings["n"], settings["p"], settings["rho"])
+            settings["n"], settings["p"], settings["rho"], settings["SNR"])
             
         estimates = np.full((scenario_reps, len(self.methods), settings["p"]), np.nan)
         rows = []
@@ -146,7 +146,7 @@ class SimulationStudy:
         temporary.replace(numeric)
         frame = pd.DataFrame(rows)
         save_csv(frame, checkpoint)
-        logging.info("Completed %s (%s replicates)", scenario_id, scenario_reps)
+        # logging.info("Completed %s (%s replicates)", scenario_id, scenario_reps)
         return frame
 
     def run(self):
@@ -166,11 +166,15 @@ class SimulationStudy:
         
         # --- NEW: Aggregate regimes and save as .pkl ---
         summary_records = []
+
+        print("results", results.columns)
+
+        print("groupedby", results.groupby(["n_reps", "gamma", "method"]).head(20))
         
         # Check that n_reps is actually in the results (prevents crashes from old caches)
         if not results.empty and "n_reps" in results.columns:
             for (n_sim, gamma, method), group in results.groupby(["n_reps", "gamma", "method"]):
-                mse_hat = group["coefficient_error"].mean()
+                mse_hat = (group["coefficient_error"] ** 2).mean()
                 count = group["coefficient_error"].count()
                 
                 # When n=1 (or if all fits failed but 1), set SE to 0
@@ -183,7 +187,7 @@ class SimulationStudy:
                     "_n_sim": n_sim,
                     "_gamma": gamma,
                     "method": method,
-                    "_mse hat": mse_hat,
+                    "_mse_hat": mse_hat,
                     "_mse_hat_standard_error": se
                 })
                 

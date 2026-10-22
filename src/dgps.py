@@ -13,11 +13,11 @@ class RegressionDGP(ABC):
     Array shapes are (n, p), (n,), (p,), (p, p), respectively.
     """
 
-    def __init__(self, n, p, rho):
+    def __init__(self, n, p, rho, SNR):
         self.n, self.p, self.rho = n, p, rho
         index = np.arange(p)
         self.covariance = rho ** np.abs(index[:, None] - index[None, :])
-        self.beta = np.ones(p) / np.sqrt(p)
+        self.beta = np.sqrt(SNR) * np.ones(p) / np.sqrt(p)
         self.factor = np.linalg.cholesky(self.covariance)
 
     @abstractmethod
