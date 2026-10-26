@@ -71,4 +71,4 @@ if __name__ == "__main__":
                            _mse_hat=_mse_hat,
                            _mse_hat_standard_error=_mse_hat_standard_error)
 
-    fig.savefig("results/figures/loss_vs_gamma.pdf")
+    fig.savefig("results/figures/figure.pdf")
