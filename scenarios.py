@@ -17,7 +17,7 @@ def make_scenarios():
         p = max(1, round(n * gamma)) # Ensure p is at least 1
         scenarios[f"nreps_{n_reps:03d}_gamma_{gamma:.3f}"] = {
             "experiment": "A", "n": n, "p": p, "rho": 0.0, 
-            "error_distribution": "normal", "n_reps": n_reps, "SNR": np.sqrt(5)
+            "error_distribution": "normal", "n_reps": n_reps, "SNR": 5
         }
 
     # Case n = 50:
@@ -26,7 +26,7 @@ def make_scenarios():
         p = max(1, round(n * gamma))
         scenarios[f"nreps_{n_reps:03d}_gamma_{gamma:.3f}"] = {
             "experiment": "A", "n": n, "p": p, "rho": 0.0, 
-            "error_distribution": "normal", "n_reps": n_reps, "SNR": np.sqrt(5)
+            "error_distribution": "normal", "n_reps": n_reps, "SNR": 5
         }
 
     # Case n = 1000:
@@ -35,7 +35,7 @@ def make_scenarios():
         p = max(1, round(n * gamma))
         scenarios[f"nreps_{n_reps:03d}_gamma_{gamma:.3f}"] = {
             "experiment": "A", "n": n, "p": p, "rho": 0.0, 
-            "error_distribution": "normal", "n_reps": n_reps, "SNR": np.sqrt(5)
+            "error_distribution": "normal", "n_reps": n_reps, "SNR": 5
         }
         
     return scenarios

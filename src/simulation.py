@@ -174,7 +174,7 @@ class SimulationStudy:
         # Check that n_reps is actually in the results (prevents crashes from old caches)
         if not results.empty and "n_reps" in results.columns:
             for (n_sim, gamma, method), group in results.groupby(["n_reps", "gamma", "method"]):
-                mse_hat = (group["coefficient_error"] ** 2).mean()
+                mse_hat = (group["coefficient_error"]).mean()
                 count = group["coefficient_error"].count()
                 
                 # When n=1 (or if all fits failed but 1), set SE to 0
