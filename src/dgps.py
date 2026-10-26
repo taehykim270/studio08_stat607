@@ -8,7 +8,7 @@ import numpy as np
 class RegressionDGP(ABC):
     """Gaussian predictors, fixed beta, and an interchangeable error law.
 
-    Parameters satisfy 0 < p < n and 0 <= rho < 1. generate() takes a
+    Parameters satisfy n, p > 0 and 0 <= rho < 1. generate() takes a
     NumPy Generator and returns X, y, beta_true, covariance in a dictionary.
     Array shapes are (n, p), (n,), (p,), (p, p), respectively.
     """
