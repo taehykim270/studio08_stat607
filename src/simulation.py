@@ -140,9 +140,9 @@ class SimulationStudy:
         numeric = checkpoint.with_suffix(".npz")
         temporary = numeric.with_suffix(".npz.tmp")
         with temporary.open("wb") as stream:
+            covariance = {} if dgp.covariance is None else {"covariance": dgp.covariance}
             np.savez_compressed(stream, estimates=estimates, beta_true=dgp.beta,
-                                covariance=dgp.covariance,
-                                method_ids=np.array([m.name for m in self.methods]))
+                                method_ids=np.array([m.name for m in self.methods]), **covariance)
         temporary.replace(numeric)
         frame = pd.DataFrame(rows)
         save_csv(frame, checkpoint)

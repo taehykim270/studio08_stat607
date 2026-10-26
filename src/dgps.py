@@ -15,17 +15,23 @@ class RegressionDGP(ABC):
 
     def __init__(self, n, p, rho, SNR):
         self.n, self.p, self.rho = n, p, rho
-        index = np.arange(p)
-        self.covariance = rho ** np.abs(index[:, None] - index[None, :])
         self.beta = np.sqrt(SNR) * np.ones(p) / np.sqrt(p)
-        self.factor = np.linalg.cholesky(self.covariance)
+
+        if rho == 0:
+            self.covariance = self.factor = None
+        else:
+            index = np.arange(p)
+            self.covariance = rho ** np.abs(index[:, None] - index[None, :])
+            self.factor = np.linalg.cholesky(self.covariance)
 
     @abstractmethod
     def errors(self, rng):
         """Return n independent errors with mean zero and variance one."""
 
     def generate(self, rng):
-        X = rng.normal(size=(self.n, self.p)) @ self.factor.T
+        X = rng.normal(size=(self.n, self.p))
+        if self.factor is not None:
+            X = X @ self.factor.T
         return {"X": X, "y": X @ self.beta + self.errors(rng),
                 "beta_true": self.beta, "covariance": self.covariance}
 

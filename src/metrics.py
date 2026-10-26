@@ -10,9 +10,15 @@ def evaluate(beta_hat, data):
     the same covariance; it does not include new response noise.
     """
     difference = beta_hat - data["beta_true"]
+    coefficient_error = float(difference @ difference)
+    if data["covariance"] is None:
+        prediction_error = coefficient_error
+    else:
+        prediction_error = float(difference @ data["covariance"] @ difference)
+
     return {"coefficient_l1": np.sum(np.abs(difference)),
-            "coefficient_error": float(difference @ difference),
-            "prediction_error": float(difference @ data["covariance"] @ difference)}
+            "coefficient_error": coefficient_error,
+            "prediction_error": prediction_error}
 
 
 def paired_ratio(lad, ols):
