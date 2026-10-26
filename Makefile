@@ -6,7 +6,7 @@ SEED ?= 20261015
 all:
 	$(MAKE) simulate
 	$(MAKE) analyze
-	$(MAKE) figures
+# 	$(MAKE) figures
 
 simulate:
 	$(PYTHON) run_simulation.py --seed $(SEED)
