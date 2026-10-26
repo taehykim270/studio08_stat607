@@ -78,7 +78,7 @@ class SimulationStudy:
         self.methods = [OLS()] if methods is None else methods
         root = Path(__file__).resolve().parents[1]
         files = [*sorted((root / "src").glob("*.py")),
-                 root / "scenarios.py", root / "simulate.py"]
+                 root / "scenarios.py", root / "run_simulation.py"]
         self.config = {
             "scenarios": scenarios, "n_reps": n_reps, "seed": seed,
             "methods": [{"method": m.name, "class": type(m).__name__,

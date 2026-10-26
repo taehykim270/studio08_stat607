@@ -9,7 +9,7 @@ all:
 	$(MAKE) figures
 
 simulate:
-	$(PYTHON) simulate.py --seed $(SEED)
+	$(PYTHON) run_simulation.py --seed $(SEED)
 
 analyze:
 	$(PYTHON) analyze_results.py --stage analyze
