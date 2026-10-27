@@ -187,6 +187,8 @@ class SimulationStudy:
                     "_n_sim": group["n_reps"].iloc[0],
                     "_gamma": group["gamma"].iloc[0],
                     "method": method,
+                    "_mse_hat": mse_hat,
+                    "_mse_hat_standard_error": se,
                 })
                 
         # Explicitly define columns so it never creates an empty-column DataFrame
