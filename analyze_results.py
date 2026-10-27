@@ -30,19 +30,26 @@ def plot_loss_vs_gamma(df,
     gamma = df[_gamma]
     mse = df[_mse_hat]
     mse_std_err = df[_mse_hat_standard_error]
-    
-    ax.errorbar(x=gamma,
-                y=mse,
-                yerr=mse_std_err,
-                label="Monte Carlo Loss",
-                alpha=alpha,
-                color="blue",
-                fmt='o',
-                markerfacecolor='blue',
-                markersize=1 if df[_n_sim].iloc[0]==1 else 4,
-                capsize=3,
-                zorder=1)
-    #ax.scatter(x=gamma, y=mse, label="Monte Carlo Loss", alpha=alpha)
+
+    if mse_std_err.iloc[0] > 0:
+        ax.errorbar(x=gamma,
+                    y=mse,
+                    yerr=mse_std_err,
+                    label="Monte Carlo Loss",
+                    alpha=alpha,
+                    color="blue",
+                    fmt='o',
+                    markerfacecolor='blue',
+                    markersize=1 if df[_n_sim].iloc[0]==1 else 4,
+                    capsize=3,
+                    zorder=1)
+    else:
+        ax.scatter(x=gamma,
+                   y=mse,
+                   label="Monte Carlo Loss",
+                   alpha=alpha,
+                   s=3,
+                   zorder=1)
 
     smoothed_fit_below_1 = sm.nonparametric.lowess(df.loc[df[_gamma] <= 1][_mse_hat], df.loc[df[_gamma] <= 1][_gamma], frac=0.1, it=0)
     smoothed_fit_above_1 = sm.nonparametric.lowess(df.loc[df[_gamma] > 1][_mse_hat], df.loc[df[_gamma] > 1][_gamma], frac=0.1, it=0)
