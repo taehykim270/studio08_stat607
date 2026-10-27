@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
+import os
 
 PATH_TO_PICKLE_FILE = "results/raw/simulation_results.pkl"
 
@@ -103,4 +104,5 @@ if __name__ == "__main__":
                            alpha = 0.1 if n_sim==1 else 0.5,
                            write_y_axis_title = (i == 0))
 
+    os.makedirs("results/figures", exist_ok=True)
     fig.savefig("results/figures/figure.pdf")
