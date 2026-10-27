@@ -79,8 +79,8 @@ def plot_loss_vs_gamma(df,
     ax.vlines([1],ymin=-0.2,ymax=10.2,linestyle='--')
     ax.hlines(SNR, xmin=0.05,xmax=10.2,linestyle='--')
 
-    ax.set_ybound(lower=-0.2,upper=10.2)
-    ax.set_xbound(lower=0.05,upper=10.2)
+    ax.set_ylim(bottom=-0.2,top=10.2)
+    ax.set_xlim(left=0.1,right=10)
 
     ax.legend()
 
