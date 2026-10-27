@@ -173,7 +173,7 @@ class SimulationStudy:
         
         # Check that n_reps is actually in the results (prevents crashes from old caches)
         if not results.empty and "n_reps" in results.columns:
-            for (n_sim, gamma, method), group in results.groupby(["n_reps", "gamma", "method"]):
+            for (scenario_id, method), group in results.groupby(["scenario_id", "method"]):
                 mse_hat = (group["coefficient_error"]).mean()
                 count = group["coefficient_error"].count()
                 
@@ -184,11 +184,9 @@ class SimulationStudy:
                     se = group["coefficient_error"].std(ddof=1) / np.sqrt(count)
                     
                 summary_records.append({
-                    "_n_sim": n_sim,
-                    "_gamma": gamma,
+                    "_n_sim": group["n_reps"].iloc[0],
+                    "_gamma": group["gamma"].iloc[0],
                     "method": method,
-                    "_mse_hat": mse_hat,
-                    "_mse_hat_standard_error": se
                 })
                 
         # Explicitly define columns so it never creates an empty-column DataFrame
