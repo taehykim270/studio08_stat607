@@ -14,6 +14,8 @@ simulate:
 analyze:
 	$(PYTHON) analyze_results.py --stage analyze
 
+figures: analyze
+
 test:
 	$(PYTHON) -m pytest -q
 
