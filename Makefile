@@ -8,10 +8,12 @@ all:
 	$(MAKE) analyze
 # 	$(MAKE) figures
 
-simulate:
+simulate: 
 	$(PYTHON) run_simulation.py --seed $(SEED)
 
-analyze:
+results/raw/simulation_results.pkl: simulate
+
+analyze: results/raw/simulation_results.pkl
 	$(PYTHON) analyze_results.py --stage analyze
 
 figures: analyze
