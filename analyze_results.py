@@ -34,7 +34,7 @@ def plot_loss_vs_gamma(df,
     if mse_std_err.iloc[0] > 0:
         ax.errorbar(x=gamma,
                     y=mse,
-                    yerr=mse_std_err,
+                    yerr=2*mse_std_err,
                     label="Monte Carlo Loss",
                     alpha=alpha,
                     color="blue",
@@ -51,17 +51,17 @@ def plot_loss_vs_gamma(df,
                    color="blue",
                    s=5,
                    zorder=1)
-
+    # if df[_n_sim].iloc[0] == 1:
     smoothed_fit_below_1 = sm.nonparametric.lowess(df.loc[df[_gamma] <= 1][_mse_hat], df.loc[df[_gamma] <= 1][_gamma], frac=0.1, it=0)
     smoothed_fit_above_1 = sm.nonparametric.lowess(df.loc[df[_gamma] > 1][_mse_hat], df.loc[df[_gamma] > 1][_gamma], frac=0.1, it=0)
-    
+
     ax.plot(smoothed_fit_below_1[:, 0], smoothed_fit_below_1[:, 1], label="MC Risk", color=FIT_COLOR, lw=2)
     ax.plot(smoothed_fit_above_1[:, 0], smoothed_fit_above_1[:, 1], color=FIT_COLOR, lw=2)
 
-    gamma_grid_lower = np.logspace(np.log(0.1),np.log(0.99),50)
+    gamma_grid_lower = np.logspace(np.log(0.1),np.log(0.99),50,base=np.e)
     asymptotic_risk_lower = gamma_grid_lower / (1 - gamma_grid_lower)
 
-    gamma_grid_upper = np.logspace(np.log(1.01),np.log(10),50)
+    gamma_grid_upper = np.logspace(np.log(1.01),np.log(10),50,base=np.e)
     asymptotic_risk_upper = SNR * (1 - 1 / gamma_grid_upper) + 1 / (gamma_grid_upper - 1)
 
     ax.plot(gamma_grid_lower, asymptotic_risk_lower, label="Asymptotic Risk", color=TRUE_RISK_COLOR)
@@ -70,6 +70,7 @@ def plot_loss_vs_gamma(df,
 
     if write_y_axis_title:
         ax.set_ylabel("MSE Loss / Risk")
+    ax.set_title(f"$n_{{sim}} = {df[_n_sim].iloc[0]}$")
     ax.set_xlabel("$\\gamma$")
     ax.set_xscale("log")
     ax.set_xticks([0.1,0.2,0.5,1.0,2,5,10.0], labels=["0.1","0.2","0.5","1.0","2","5","10.0"])
