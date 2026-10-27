@@ -82,7 +82,10 @@ def plot_loss_vs_gamma(df,
     ax.set_ylim(bottom=-0.2,top=10.2)
     ax.set_xlim(left=0.1,right=10)
 
-    ax.legend()
+    ax.legend(
+        loc="upper left", fontsize="xx-small", handlelength=1, borderaxespad=0,
+        fancybox=False, edgecolor="black",
+    )
 
 if __name__ == "__main__":
     # Load the DataFrame from the pickle file
