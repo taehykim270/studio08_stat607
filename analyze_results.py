@@ -48,19 +48,20 @@ def plot_loss_vs_gamma(df,
                    y=mse,
                    label="Monte Carlo Loss",
                    alpha=alpha,
-                   s=3,
+                   color="blue",
+                   s=5,
                    zorder=1)
 
     smoothed_fit_below_1 = sm.nonparametric.lowess(df.loc[df[_gamma] <= 1][_mse_hat], df.loc[df[_gamma] <= 1][_gamma], frac=0.1, it=0)
     smoothed_fit_above_1 = sm.nonparametric.lowess(df.loc[df[_gamma] > 1][_mse_hat], df.loc[df[_gamma] > 1][_gamma], frac=0.1, it=0)
     
-    ax.plot(smoothed_fit_below_1[:, 0], smoothed_fit_below_1[:, 1], label="MC Risk", color=FIT_COLOR)
-    ax.plot(smoothed_fit_above_1[:, 0], smoothed_fit_above_1[:, 1], color=FIT_COLOR)
+    ax.plot(smoothed_fit_below_1[:, 0], smoothed_fit_below_1[:, 1], label="MC Risk", color=FIT_COLOR, lw=2)
+    ax.plot(smoothed_fit_above_1[:, 0], smoothed_fit_above_1[:, 1], color=FIT_COLOR, lw=2)
 
-    gamma_grid_lower = np.linspace(0.1,0.99,50)
+    gamma_grid_lower = np.logspace(np.log(0.1),np.log(0.99),50)
     asymptotic_risk_lower = gamma_grid_lower / (1 - gamma_grid_lower)
 
-    gamma_grid_upper = np.linspace(1.01,10,50)
+    gamma_grid_upper = np.logspace(np.log(1.01),np.log(10),50)
     asymptotic_risk_upper = SNR * (1 - 1 / gamma_grid_upper) + 1 / (gamma_grid_upper - 1)
 
     ax.plot(gamma_grid_lower, asymptotic_risk_lower, label="Asymptotic Risk", color=TRUE_RISK_COLOR)
